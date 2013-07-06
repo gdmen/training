@@ -1,0 +1,17 @@
+name = Icon API: Menu
+description = Provides icon integration with menu items.
+core = 7.x
+package = Icon API
+
+files[] = icon_menu.install
+files[] = icon_menu.module
+
+dependencies[] = icon
+dependencies[] = menu
+
+; Information added by drupal.org packaging script on 2013-06-24
+version = "7.x-1.0-beta2"
+core = "7.x"
+project = "icon"
+datestamp = "1372086351"
+

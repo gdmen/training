@@ -1,0 +1,121 @@
+html, body {
+ height: 100%;
+}
+
+#non-footer {
+  position: relative;
+  min-height: 100%;
+}
+
+* html #non-footer {
+  height: 100%;
+}
+
+#content {
+  padding-bottom: @footerHeight;
+}
+
+#header{
+  background-color: #000;
+  background-image: url(@headerBackgroundImage);
+  padding-bottom: 1em;
+
+  .header-left {
+  }
+  .brand {
+    font-family: "Sansita One", cursive;
+    font-size: 2em;
+    line-height: 1.5em;
+    margin-left: 2px;
+    &:hover {
+      color: @linkColor;
+      text-decoration: none;
+    }
+  }
+  .header-subtext {
+    color: @gray;
+    font-family: "Sansita One", cursive;
+    margin-left: 1px;
+    &:hover {
+      color: @linkColor;
+      text-decoration: none;
+    }
+  }
+}
+
+footer {
+  margin-top: -@footerHeight;
+  height: @footerHeight - 1em;
+  margin-bottom: 1em;
+  position: relative;
+  .container {
+    .well();
+    height: @footerHeight - 3em;
+    min-height: 0;
+    margin: 0 auto;
+    padding: 1em;
+    text-align: center;
+    .social-media {
+      display: inline-block;
+      .thumbnails {
+        margin: 0;
+        padding: 0;
+        li {
+          margin-left: @gridGutterWidth / 8;
+          margin-bottom: 0;
+          i {
+            color: @navbarBackground;
+            font-size: 3em;
+            text-decoration: none;
+          }
+        }
+      }
+    }
+  }
+}
+
+.blog {
+  padding-bottom: @baseLineHeight;
+  .blog-title {
+    text-transform: capitalize;
+  }
+  .blog-date {
+    color: @gray;
+    i {
+      padding-right: 0.5em;
+    }
+  }
+  .blog-nav {
+    a {
+      text-transform: uppercase;
+      i {
+        vertical-align: middle;
+      }
+      &.left {
+        float: left;
+        i {
+          padding-right: 0.5em;
+        }
+      }
+      &.right {
+        float: right;
+        i {
+          padding-left: 0.5em;
+        }
+      }
+    }
+  }
+}
+
+.photography-header {
+  text-transform: capitalize;
+}
+
+.stop-scrolling {
+  height: 100%;
+  overflow: hidden;
+}
+
+strong {
+  color: @emphasis;
+}
