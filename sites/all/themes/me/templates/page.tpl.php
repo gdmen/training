@@ -89,6 +89,8 @@
 
   </div>
 </div>
+</div> <!-- /sticky-content -->
+</div> <!-- /sticky-non-footer -->
 <footer class="footer container">
   <?php print render($page['footer']); ?>
 </footer>

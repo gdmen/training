@@ -18,9 +18,15 @@
 
 // Float li to make thumbnails appear in a row
 .thumbnails > li {
+  background-color: @wellBackground;
   float: left; // Explicity set the float since we don't require .span* classes
   margin-bottom: @baseLineHeight;
   margin-left: @gridGutterWidth;
+}
+.thumbnails > li > h1,h2,h3,h4,h5,h6 {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 // The actual thumbnail (can be `a` or `div`)
@@ -32,18 +38,22 @@
   .border-radius(@baseBorderRadius);
   .box-shadow(0 1px 3px rgba(0,0,0,.055));
   .transition(all .2s ease-in-out);
+  text-decoration: none;
 }
 // Add a hover/focus state for linked versions only
 a.thumbnail:hover,
 a.thumbnail:focus {
   border-color: @linkColor;
   .box-shadow(0 1px 4px rgba(0,105,214,.25));
+  text-decoration: none;
 }
 
 // Images and captions
 .thumbnail > img {
   display: block;
   max-width: 100%;
+  //gdm
+  width: 100%;
   margin-left: auto;
   margin-right: auto;
 }

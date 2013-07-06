@@ -2,16 +2,16 @@ html, body {
  height: 100%;
 }
 
-#non-footer {
+#sticky-non-footer {
   position: relative;
   min-height: 100%;
 }
 
-* html #non-footer {
+* html #sticky-non-footer {
   height: 100%;
 }
 
-#content {
+#sticky-content {
   padding-bottom: @footerHeight;
 }
 
@@ -43,7 +43,7 @@ html, body {
   }
 }
 
-footer {
+footer, .footer {
   margin-top: -@footerHeight;
   height: @footerHeight - 1em;
   margin-bottom: 1em;
@@ -105,10 +105,6 @@ footer {
       }
     }
   }
-}
-
-.photography-header {
-  text-transform: capitalize;
 }
 
 .stop-scrolling {

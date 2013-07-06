@@ -1,7 +1,26 @@
 //
 // Typography
 // --------------------------------------------------
+@fontPath: '../font';
 
+@font-face {
+  font-family: "Sansita One";
+  src: 
+      url('@{fontPath}/SansitaOne/SansitaOne.woff') format('woff'),
+      url('@{fontPath}/SansitaOne/SansitaOne.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Droid Serif";
+  src: url('@{fontPath}/Droid-Serif/DroidSerif.ttf') format('truetype'),
+    url('@{fontPath}/Droid-Serif/DroidSerif-Bold.ttf') format('truetype'),
+    url('@{fontPath}/Droid-Serif/DroidSerif-BoldItalic.ttf') format('truetype'),
+    url('@{fontPath}/Droid-Serif/DroidSerif-Italic.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
 
 // Body text
 // -------------------------

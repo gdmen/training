@@ -1,6 +1,16 @@
 //
 // Mixins
 // --------------------------------------------------
+.grayscale {
+    filter: url(filters.svg#grayscale); /* Firefox 3.5+ */
+    filter: gray; /* IE6-9 */
+    -webkit-filter: grayscale(1); /* Webkit Nightlies & Google Chrome Canary */
+}
+.grayscale:hover {
+    filter: none; /* Applies to FF + IE */
+    -webkit-filter: grayscale(0);
+}
+
 
 
 // UTILITY MIXINS
