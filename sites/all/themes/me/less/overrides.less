@@ -56,9 +56,6 @@ body {
     // http://drupal.org/node/1870076
     position: relative;
   }
-  @media @normal, @wide {
-    padding-top: 60px;
-  }
   // Core admin toolbar.
   &.toolbar .navbar-fixed-top {
    top: 30px;
@@ -72,14 +69,6 @@ body {
   }
   div#admin-toolbar {
     z-index: 500;
-  }
-  @media @normal, @wide {
-    &.toolbar {
-      padding-top: 94px !important;
-    }
-    &.toolbar-drawer {
-      padding-top: 129px !important;
-    }
   }
   // Admin_menu toolbar.
   #admin-menu {
@@ -100,11 +89,6 @@ body {
       top: 28px;
     }
   }
-}
-.footer {
-  margin-top: 45px;
-  padding: 35px 0 36px;
-  border-top: 1px solid #E5E5E5;
 }
 
 // Element invisible fix
