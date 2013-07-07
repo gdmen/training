@@ -1,28 +1,29 @@
-      <div id="header">
-        <div class="container">
-          <div class="row">
-            <div class="span12 content text-center">
-              <div>
-                <h3>
-                  <?php if (!empty($site_name)): ?>
-                    <a href="<?php print $front_page; ?>"
-                       title="<?php print t('Home'); ?>"
-                       class="brand">
-                         <?php print $site_name; ?>
-                    </a>
-                  <?php else: ?>
-                    Gary Menezes
-                  <?php endif; ?>
-                </h3>
-              </div>
-              <div>
-                <a class="header-subtext" href="mailto:gmenezes@seas.upenn.edu">gmenezes@seas.upenn.edu</a>
-              </div>
+    <div id="header">
+      <div class="container">
+        <div class="row">
+          <div class="span12 content text-center">
+            <div>
+              <h3>
+                <?php if (!empty($site_name)): ?>
+                  <a href="<?php print $front_page; ?>"
+                     title="<?php print t('Home'); ?>"
+                     class="brand">
+                       <?php print $site_name; ?>
+                  </a>
+                <?php else: ?>
+                  Gary Menezes
+                <?php endif; ?>
+              </h3>
+            </div>
+            <div>
+              <a class="header-subtext" href="mailto:gmenezes@seas.upenn.edu">gmenezes@seas.upenn.edu</a>
             </div>
           </div>
         </div>
       </div>
-      <header id="navbar" role="banner" class="navbar navbar-top">
+    </div>
+    
+    <header id="navbar" role="banner" class="navbar navbar-top">
       <div class="navbar-inner">
         <div class="container">
           <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
