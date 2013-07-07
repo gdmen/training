@@ -10,6 +10,20 @@
   margin-left: 0;
   margin-bottom: @baseLineHeight;
   list-style: none;
+  &.menu {
+    margin: (@baseLineHeight / 2) 0;
+    font-family: @headingsFontFamily;
+    font-size: @baseFontSize * 1.25;
+    font-weight: @headingsFontWeight;
+    line-height: @baseLineHeight;
+    color: @headingsColor;
+    text-rendering: optimizelegibility; // Fix the character spacing for headings
+    small {
+      font-weight: normal;
+      line-height: 1;
+      color: @grayLight;
+    }
+  }
 }
 
 // Make links block level

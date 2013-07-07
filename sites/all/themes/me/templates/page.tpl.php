@@ -1,4 +1,18 @@
-    <header id="navbar" role="banner" class="navbar navbar-top">
+      <div id="header">
+        <div class="container">
+          <div class="row">
+            <div class="span12 content text-center">
+              <div>
+                <h3><a class="brand" href="#">Gary Menezes</a></h3>
+              </div>
+              <div>
+                <a class="header-subtext" href="mailto:gmenezes@seas.upenn.edu">gmenezes@seas.upenn.edu</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <header id="navbar" role="banner" class="navbar navbar-top">
       <div class="navbar-inner">
         <div class="container">
           <!-- .btn-navbar is used as the toggle for collapsed navbar content -->

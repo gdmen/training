@@ -18,20 +18,6 @@
       <div id="skip-link">
         <a href="#main-content" class="element-invisible element-focusable"><?php print t('Skip to main content'); ?></a>
       </div>
-      <div id="header">
-        <div class="container">
-          <div class="row">
-            <div class="span12 content text-center">
-              <div>
-                <h3><a class="brand" href="#">Gary Menezes</a></h3>
-              </div>
-              <div>
-                <a class="header-subtext" href="mailto:gmenezes@seas.upenn.edu">gmenezes@seas.upenn.edu</a>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
       <?php print $page_top; ?>
       <?php print $page; ?>
       <?php print $page_bottom; ?>
