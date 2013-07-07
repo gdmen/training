@@ -20,17 +20,14 @@ html, body {
   background-image: url(@headerBackgroundImage);
   padding-bottom: 1em;
 
-  .header-left {
-  }
   .brand {
+    color: @linkColor;
     font-family: "Sansita One", cursive;
     font-size: 2em;
     line-height: 1.5em;
     margin-left: 2px;
-    &:hover {
-      color: @linkColor;
-      text-decoration: none;
-    }
+    outline: none;
+    text-decoration: none;
   }
   .header-subtext {
     color: @gray;
@@ -81,7 +78,10 @@ html, body {
   }
 }
 
-#edit-comment-body-und-0-format {
+#edit-comment-body-und-0-format,
+ul li.comment-reply,
+.comment header h3,
+.comment header .submitted .permalink {
  display: none;
 }
 

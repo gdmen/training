@@ -26,6 +26,7 @@
 // -------------------------
 
 p {
+  font-size: @fontSizeMedium;
   margin: 0 0 @baseLineHeight / 2;
 }
 .lead {
@@ -86,6 +87,17 @@ h1, h2, h3, h4, h5, h6 {
     font-weight: normal;
     line-height: 1;
     color: @grayLight;
+  }
+  a,
+  a:hover,
+  a:focus,
+  a:active,
+  a:visited  {
+    color: @headingsColor;
+    outline: none;
+  }
+  a:hover {
+    text-decoration: underline;
   }
 }
 

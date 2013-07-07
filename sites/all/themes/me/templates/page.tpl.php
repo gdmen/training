@@ -3,7 +3,17 @@
           <div class="row">
             <div class="span12 content text-center">
               <div>
-                <h3><a class="brand" href="#">Gary Menezes</a></h3>
+                <h3>
+                  <?php if (!empty($site_name)): ?>
+                    <a href="<?php print $front_page; ?>"
+                       title="<?php print t('Home'); ?>"
+                       class="brand">
+                         <?php print $site_name; ?>
+                    </a>
+                  <?php else: ?>
+                    Gary Menezes
+                  <?php endif; ?>
+                </h3>
               </div>
               <div>
                 <a class="header-subtext" href="mailto:gmenezes@seas.upenn.edu">gmenezes@seas.upenn.edu</a>
@@ -26,12 +36,6 @@
             <a class="logo pull-left" href="<?php print $front_page; ?>" title="<?php print t('Home'); ?>">
               <img src="<?php print $logo; ?>" alt="<?php print t('Home'); ?>" />
             </a>
-          <?php endif; ?>
-
-          <?php if (!empty($site_name)): ?>
-            <h1 id="site-name">
-              <a href="<?php print $front_page; ?>" title="<?php print t('Home'); ?>" class="brand"><?php print $site_name; ?></a>
-            </h1>
           <?php endif; ?>
 
           <?php if (!empty($primary_nav) || !empty($secondary_nav) || !empty($page['navigation'])): ?>
