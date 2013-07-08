@@ -19,24 +19,16 @@ html, body {
   background-color: #000;
   background-image: url(@headerBackgroundImage);
   padding-bottom: 1em;
+  text-align: center;
 
   .brand {
     color: @linkColor;
-    font-family: "Sansita One", cursive;
+    font-family: @headingsFontFamily;//"Sansita One", cursive;
     font-size: 2em;
     line-height: 1.5em;
     margin-left: 2px;
     outline: none;
     text-decoration: none;
-  }
-  .header-subtext {
-    color: @gray;
-    font-family: "Sansita One", cursive;
-    margin-left: 1px;
-    &:hover {
-      color: @linkColor;
-      text-decoration: none;
-    }
   }
 }
 
@@ -80,13 +72,16 @@ strong {
   padding-top: 1em;
 }
 
-.view-wp-blog {
+.view-techniques {
   .views-row {
     .well();
     min-height: 0;
+    header {
+    }
   }
 }
 
+.views-row .comment-add,
 #edit-comment-body-und-0-format,
 ul li.comment-reply,
 .comment header h3,

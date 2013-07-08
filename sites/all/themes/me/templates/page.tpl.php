@@ -1,7 +1,7 @@
     <div id="header">
       <div class="container">
         <div class="row">
-          <div class="span12 content text-center">
+          <div class="span12 content">
             <div>
               <h3>
                 <?php if (!empty($site_name)): ?>
@@ -14,9 +14,6 @@
                   Gary Menezes
                 <?php endif; ?>
               </h3>
-            </div>
-            <div>
-              <a class="header-subtext" href="mailto:gmenezes@seas.upenn.edu">gmenezes@seas.upenn.edu</a>
             </div>
           </div>
         </div>
@@ -70,6 +67,12 @@
 
       <div class="row-fluid">
 
+        <?php if (!empty($page['sidebar_first'])): ?>
+          <aside class="span3" role="complementary">
+            <?php print render($page['sidebar_first']); ?>
+          </aside>  <!-- /#sidebar-first -->
+        <?php endif; ?> 
+
         <section class="<?php print _bootstrap_content_span($columns); ?>">  
           <?php if (!empty($page['highlighted'])): ?>
             <div class="highlighted hero-unit"><?php print render($page['highlighted']); ?></div>
@@ -92,13 +95,7 @@
             <ul class="action-links"><?php print render($action_links); ?></ul>
           <?php endif; ?>
           <?php print render($page['content']); ?>
-        </section>
-
-        <?php if (!empty($page['sidebar_first'])): ?>
-          <aside class="span3" role="complementary">
-            <?php print render($page['sidebar_first']); ?>
-          </aside>  <!-- /#sidebar-first -->
-        <?php endif; ?>  
+        </section> 
 
         <?php if (!empty($page['sidebar_second'])): ?>
           <aside class="span3" role="complementary">
