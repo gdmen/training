@@ -366,7 +366,7 @@ class DrupalDefaultEntityController implements DrupalEntityControllerInterface {
     if ($conditions) {
       foreach ($entities as $entity) {
         $entity_values = (array) $entity;
-        if (array_diff_assoc($conditions, $entity_values)) {
+        if (array_diff_assoc(array_map('serialize', $conditions), array_map('serialize', $entity_values))) {
           unset($entities[$entity->{$this->idKey}]);
         }
       }
