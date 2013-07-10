@@ -1,24 +1,62 @@
 <?php
-$techniques_dir = 'technique_dictionary';
-$positions_dir = $techniques_dir . '/positions/';
-$submissions_dir = $techniques_dir . '/submissions/';
+$dir = 'technique_dictionary/';
+$post_type = 'technique_post';
+$uid = 1;
 
-function getNameFromFile($filename) {
-  return str_replace('_', ' ', pathinfo($filename)['filename']);
-}
+$techniques = getTechniquesFromDir($dir);
 
-$raw_positions = array();
-foreach (glob($positions_dir . '*.txt') as $filename) {
-  $raw_positions[getNameFromFile($filename)] = file_get_contents($filename);
-}
-print_r($raw_positions);
+// Gotten all modified / consequently to be modified techniques.
 
 define('DRUPAL_ROOT', getcwd());
 $_SERVER['REMOTE_ADDR'] = "localhost"; // Necessary if running from command line
 require_once DRUPAL_ROOT . '/includes/bootstrap.inc';
 drupal_bootstrap(DRUPAL_BOOTSTRAP_FULL);
 
+foreach($techniques as $technique) {
+  $node = NULL;
+  $node_exists = db_query("SELECT nid FROM {node} WHERE title = :title AND type = :type",
+    array(':title' => $title, ':type' => $post_type)
+  );
+  if($node_exists) {
+    $row = $node_exists->fetchAssoc();
+    $node = node_load($row['nid']);
+    print("HERE!");
+  }else {
+    $node = new stdClass(); // Create a new node object
+    node_object_prepare($node);
+  }
+  if($node === NULL) {
+    continue;
+  }
+  $technique->fullParse();
+  $node->title = $technique->getName();
+  //LANGUAGE_NONE?
+  $node->uid = $uid;
+  $node->body[$node->language][0]['value'] = $technique->getMarkdown();
+  $node->body[$node->language][0]['format'] = 'markdown';
+  if($node = node_submit($node)) {
+      node_save($node);
+  }
+}
+
+function getNameFromFile($filename) {
+  return str_replace('_', ' ', pathinfo($filename)['filename']);
+}
+
+function getTechniquesFromDir($dir) {
+  $return = array();
+  foreach (glob($dir . '*.txt') as $filename) {
+    $name = getNameFromFile($filename);
+    $raw = file_get_contents($filename);
+    $return[$name] = new Technique($name, $raw);
+  }
+  return $return;
+}
+
 class Technique {
+  // Raw text.
+  private $raw = '';
+>>>>>>> Begins work on post-generation script.
   // Name.
   private $name = '';
   // TechniqueType
@@ -35,23 +73,57 @@ class Technique {
   private $directions = [];
   // List of Escape objects
   private $escapes = [];
-  public function __construct($name, $type, $tags, $from, $to, $notes, $directions, $escapes) {
+  /**
+   * Does immediately necessary parsing.
+   **/
+  public function __construct($name, $raw) {
     $this->name = $name;
-    $this->type = $type;
-    $this->tags = $tags;
-    $this->from = $from;
-    $this->to = $to;
-    $this->notes = $notes;
-    $this->directions = $directions;
-    $this->escapes = $escapes;
+    $this->raw = $raw;
+    
+    preg_match_all("/to:\[(?P<to>[a-z\s\-]+)\]/i", $this->raw, $m);
+    $this->to = $m['to'];
+  }
+  public function getName() {
+    return $this->name;
+  }
+  public function getTo() {
+    return $this->to;
   }
   public function getMarkdown() {
-   return '';
+    return $this->raw;
+  }
+  public function fullParse() {
+    $this->parseTags();
+    $this->parseType();
+  }
+  private function parseTags() {
+    preg_match_all("/^Type:(?P<tags>[^\n]*)/i", $this->raw, $m);
+    $this->tags = preg_split("/\s*,\s*/", $m['tags'][0]);
+    $this->tags = array_map("trim", $this->tags);
+  }
+  private function parseType() {
+    foreach($this->tags as $tag) {
+      if($type = TechniqueType::reverseLookup($tag)) {
+        $this->type = $type;
+        return true;
+      }
+    }
+    return false;
   }
 }
+
 class TechniqueType {
-  const POSITION = 0;
-  const SUBMISSION = 1;
+  const POSITION = 'position';
+  const SUBMISSION = 'submission';
+  static function reverseLookup($str) {
+    switch(strtolower($str)) {
+      case TechniqueType::POSITION:
+        return TechniqueType::POSITION;
+      case TechniqueType::SUBMISSION:
+        return TechniqueType::SUBMISSION;
+    }
+    return false;
+  }
 }
 class Direction {
   // Text.
