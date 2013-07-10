@@ -62,12 +62,11 @@ foreach($techniques as $t) {
   }
   if($node === NULL) {
     continue;
-  }
+  
+  print_r($node);
   $t->fullParse($taxonomy);
   $node->title = $t->getTitle();
-  print_r($node);
   $node->field_technique_tags[$node->language] = $t->getTags();
-  print_r($node);
   //$node->taxonomy = $t->getTags();
   $node->type = $node_type;
   $node->language = LANGUAGE_NONE;
@@ -78,7 +77,7 @@ foreach($techniques as $t) {
   $node->revision = 1;
   $node->log = 'This node was programmatically updated at ' . date('c');
   if($node = node_submit($node)) {
-      node_save($node);
+    node_save($node);
   }
 }
 
