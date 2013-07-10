@@ -1,0 +1,26 @@
+Type: position
+
+Terminology: 
+- In ref:[bottom half guard] the 'attacking side' is the side with the un-trapped leg.
+
+to:[test]
+to:[testy]
+to:[Testy]
+
+to:[testy-choke]
+
+to:[half guard full]
+Directions:
+- Steps for
+- maintaining
+- this position
+
+Escapes:
+
+Roll out
+- step
+- step
+
+sweep
+- step
+- step2

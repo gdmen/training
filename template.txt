@@ -1,0 +1,27 @@
+#### Summary:
+Type: [[path:submission|submission]], [[path:shoulder-lock|shoulder-lock]]
+
+Transition From: [[bottom guard|bottom-guard]], [[bottom half guard|bottom-half-guard]], [[triangle|triangle]]
+
+Transition To: [[gogoplata|gogoplata]],  [[armbar|armbar]]
+
+####Notes:
+
+- In [[bottom half guard|bottom-half-guard]] the 'attacking side' is the side with the un-trapped leg.
+
+#### Directions:
+
+1. Attacking side hand underhooks and traps uke's same side arm. Opposite hand holds uke's same side wrist.
+2. Opposite side foot on uke's hip, shrimp out to the attacking side such that torso is perpendicular to uke's torso.
+3. While shrimping out, bend uke's arm at elbow such that his fingers are pointed towards his feet.
+4. Attacking side foot over uke's arm (between uke's side and forearm).
+
+    (If uke defends by holding onto this foot, transition to [[gogoplata|gogoplata]])
+
+5. Use attacking side arm over uke's waist to start sitting up and prevent uke from rolling out.
+
+    (If uke defends by rolling forward, transition to [[armbar|armbar]])
+
+6. While sitting up, secure uke's forearm arm between attacking side thigh and torso.
+7. Opposite side leg comes out and goes back (like a [[technical stand-up|technical stand-up]]).
+8. Lean forward.
