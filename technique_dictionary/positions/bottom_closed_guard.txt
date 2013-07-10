@@ -1,0 +1,17 @@
+Type: position
+
+Terminology: 
+- In ref:[bottom half guard] the 'attacking side' is the side with the un-trapped leg.
+
+Directions:
+- Steps for
+- maintaining
+- this position
+
+Escapes:
+- Roll out
+  - step
+  - step
+- sweep
+  - step
+  - step2
