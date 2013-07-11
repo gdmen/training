@@ -9,7 +9,7 @@ Directions:
 - this position
 
 Escapes:
-to:[top mount]
+to:[armbar]
 
 Roll out
 - step

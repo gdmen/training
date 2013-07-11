@@ -47,7 +47,7 @@ if($result) {
     $taxonomy[$row['name']] = $row['tid'];
   }
 }
-  
+
 foreach($techniques as $t) {
   $node = NULL;
   $node_exists = db_query("SELECT nid FROM {node} WHERE UPPER(title) = UPPER(:title) AND type = :type",
@@ -62,16 +62,18 @@ foreach($techniques as $t) {
   }
   if($node === NULL) {
     continue;
-  
-  print_r($node);
-  $t->fullParse($taxonomy);
-  $node->title = $t->getTitle();
-  $node->field_technique_tags[$node->language] = $t->getTags();
+  }
+  $t->parseEscapes();
+  continue;
+  //print_r($node);
+  $mt = new MarkdownTechnique($t, $taxonomy);
+  $node->title = $mt->getTitle();
+  $node->field_technique_tags[$node->language] = $mt->getTags();
   //$node->taxonomy = $t->getTags();
   $node->type = $node_type;
   $node->language = LANGUAGE_NONE;
   $node->uid = $uid;
-  $node->body[$node->language][0]['value'] = $t->getMarkdown();
+  $node->body[$node->language][0]['value'] = $mt->getBody();
   $node->body[$node->language][0]['format'] = 'markdown';
   // Make this change a new revision
   $node->revision = 1;
@@ -108,11 +110,11 @@ class Technique {
   private $from = [];
   // List of techniques to transition into from this technique.
   private $to = [];
-  // List of terminology notes.
+  // List of notes as ListItem objects.
   private $notes = [];
-  // List of Direction objects.
+  // List of directions as ListItem objects.
   private $directions = [];
-  // List of Escape objects
+  // List of escapes as ListItem objects
   private $escapes = [];
   /**
    * Does immediately necessary parsing.
@@ -141,6 +143,62 @@ class Technique {
   public function getFrom() {
     return $this->from;
   }
+  public function getTags() {
+    return $this->tags;
+  }
+  public function getType() {
+    return $this->type;
+  }
+  public function getNotes() {
+    return $this->notes;
+  }
+  public function getDirections() {
+    return $this->directions;
+  }
+  public function getEscapes() {
+    return $this->escapes;
+  }
+  
+  public function completeParse() {
+    $this->parseNotes();
+    $this->parseDirections();
+    $this->parseEscapes();
+  }
+  public function parseNotes() {
+    preg_match("/Notes:\s*(?P<select>[^\s].*[^\s])\s*Directions:/s", $this->raw, $m);
+    $lines = preg_split("/\r?\n/", $m['group'], NULL, PREG_SPLIT_NO_EMPTY);
+    foreach($lines as $l) {
+      if(strpos($l, "- ") === 0) {
+        $this->notes[] = new ListItem(substr($l,2), False);
+      } else {
+        $this->notes[] = new ListItem($l, True);
+      }
+    }
+  }
+  public function parseDirections() {
+    preg_match("/Directions:\s*(?P<select>[^\s].*[^\s])\s*Escapes:/s", $this->raw, $m);
+    $lines = preg_split("/\r?\n/", $m['group'], NULL, PREG_SPLIT_NO_EMPTY);
+    foreach($lines as $l) {
+      if(strpos($l, "- ") === 0) {
+        $this->directions[] = new ListItem(substr($l,2), False);
+      } else {
+        $this->directions[] = new ListItem($l, True);
+      }
+    }
+    print_r($this->directions);
+  }
+  public function parseEscapes() {
+    preg_match("/Escapes:\s*(?P<select>[^\s].*[^\s])\s*/s", $this->raw, $m);
+    $lines = preg_split("/\r?\n/", $m['group'], NULL, PREG_SPLIT_NO_EMPTY);
+    foreach($lines as $l) {
+      if(strpos($l, "- ") === 0) {
+        $this->escapes[] = new ListItem(substr($l,2), False);
+      } else {
+        $this->escapes[] = new ListItem($l, True);
+      }
+    }
+    print_r($this->escapes);
+  }
   public function addFrom($name) {
     if(in_array($name, $this->from)) {
       return false;
@@ -148,41 +206,18 @@ class Technique {
     $this->from[] = $name;
     return true;
   }
-  public function getTags() {
-    return $this->tags;
-  }
-  public function getType() {
-    return $this->type;
-  }
-  public function getMarkdown() {
-    return $this->raw;
-  }
-  public function fullParse($taxonomy) {
-    $this->convertTags($taxonomy);
-    return;
-  }
-  private function convertTags($t) {
-    //TODO: Right now it ignores tags that don't already exist
-    $new_tags = array();
-    foreach($this->tags as $tag) {
-      if(isset($t[$tag])) {
-        $new_tags[] = ['tid' => $t[$tag]];
-      }
-    }
-    $this->tags = $new_tags;
-  }
   private function parseTo() { 
-    preg_match_all("/to:\[(?P<to>[a-z\s\-]+)\]/i", $this->raw, $m);
-    $this->to = $m['to'];
+    preg_match_all("/to:\[(?P<select>[a-z\s\-]+)\]/i", $this->raw, $m);
+    $this->to = $m['group'];
   }
   private function parseFrom() {
-    preg_match_all("/From:(?P<from>[^\n]*)/i", $this->raw, $m);
-    $this->from = preg_split("/\s*,\s*/", $m['from'][0]);
+    preg_match_all("/From:(?P<select>[^\n]*)/i", $this->raw, $m);
+    $this->from = preg_split("/\s*,\s*/", $m['group'][0]);
     $this->from = array_map("trim", $this->from);
   }
   private function parseTags() {
-    preg_match_all("/^Type:(?P<tags>[^\n]*)/i", $this->raw, $m);
-    $this->tags = preg_split("/\s*,\s*/", $m['tags'][0]);
+    preg_match_all("/^Type:(?P<select>[^\n]*)/i", $this->raw, $m);
+    $this->tags = preg_split("/\s*,\s*/", $m['group'][0]);
     $this->tags = array_map("trim", $this->tags);
     $replace = function($str) {
       return str_replace(' ', '-', $str);
@@ -200,6 +235,46 @@ class Technique {
   }
 }
 
+class MarkdownTechnique {
+  private $title = '';
+  private $tags = [];
+  private $header = '';
+  private $notes = '';
+  private $directions = '';
+  private $escapes = '';
+  // input: technique object
+  public function __construct($technique, $taxonomy) {
+    $technique->completeParse();
+    $this->title = constructTitle($technique);
+    $this->tags = constructTags($technique. $taxonomy);
+    $this->header = constructHeader($technique);
+    $this->notes = constructNotes($technique);
+    $this->directions = constructDirections($technique);
+    $this->escapes = constructEscapes($technique);
+  }
+  public function getTitle() {
+    return $this->title;
+  }
+  public function getTags() {
+    return $this->tags;
+  }
+  public function getBody() {
+    return $this->header . $this->notes . $this->directions . $this->escapes;
+  }
+  private function constructTitle($technique) {
+  }
+  private function constructTags($technique, $taxonomy) {
+    //TODO: Right now it ignores tags that don't already exist
+    $new_tags = array();
+    foreach($technique->tags as $tag) {
+      if(isset($taxonomy[$tag])) {
+        $new_tags[] = ['tid' => $taxonomy[$tag]];
+      }
+    }
+    return $new_tags;
+  }
+}
+
 class TechniqueType {
   const POSITION = 'position';
   const SUBMISSION = 'submission';
@@ -213,10 +288,14 @@ class TechniqueType {
     return false;
   }
 }
-class Direction {
+class ListItem {
   // Text.
   public $text = '';
-  // Whether this is a substep.
-  public $isSubstep = False;
+  // Whether this is a sub-item.
+  public $isInset = False;
+  public function __construct($text, $isInset) {
+    $this->text = $text;
+    $this->isInset = $isInset;
+  }
 }
 ?>

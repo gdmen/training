@@ -2,8 +2,12 @@ Type: submission, choke
 
 From: bottom closed guard  
 
-Terminology: 
+Notes: 
 - In ref:[bottom half guard] the 'attacking side' is the side with the un-trapped leg.
+- Steps for
+- maintainingUse attacking side arm over uke's waist to start sitting up and prevent
+uke from rolling out.Use attacking side arm over uke's waist to start sitting up and prevent uke from rolling out.
+- this position
 
 Directions:
 - ankle on neck
@@ -15,10 +19,10 @@ Directions:
 
 Escapes:
 
-sweep gogo
+*sweep gogo
 - step
 - step
 
-sweep
+*sweep
 - step
 - step2

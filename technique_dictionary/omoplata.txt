@@ -2,7 +2,7 @@ Type: submission, shoulder lock
 
 From: bottom closed guard, bottom half guard
 
-Terminology: 
+Notes: 
 - In ref:[bottom half guard] the 'attacking side' is the side with the un-trapped leg.
 
 Directions:
