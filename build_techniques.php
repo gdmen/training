@@ -1,7 +1,7 @@
 <?php
 $dir = 'technique_dictionary/';
 $node_type = 'technique_post';
-$uid = 1;
+$uid = '1';
 
 function getNameFromFile($filename) {
   return str_replace('_', ' ', pathinfo($filename)['filename']);
@@ -26,21 +26,29 @@ $techniques = getTechniquesFromDir($dir);
 
 // Gotten all modified / consequently to be modified techniques.
 
-mergeTechniques($techniques);
+propogateReferences($techniques);
 
 // Update 'from' fields.
-function mergeTechniques($techniques) {
+function propogateReferences($techniques) {
   $changes = true;
   while($changes) {
     $changes = false;
-    foreach($techniques as $name => $t_from) {
-      foreach($t_from->getTo() as $to) {
+    foreach($techniques as $name => $t_source) {
+      foreach($t_source->getTo() as $other) {
         // skip self references
-        if($t_from->getName() === $to ||
-           !isset($techniques[$to])) {
+        if($t_source->getName() === $other ||
+           !isset($techniques[$other])) {
           continue;
         }
-        $changes = $changes || $techniques[$to]->addFrom($t_from->getName());
+        $changes |= $techniques[$other]->addFrom($t_source->getName());
+      }
+      foreach($t_source->getFrom() as $other) {
+        // skip self references
+        if($t_source->getName() === $other ||
+           !isset($techniques[$other])) {
+          continue;
+        }
+        $changes |= $techniques[$other]->addTo($t_source->getName());
       }
     }
   }
@@ -62,6 +70,14 @@ if($result) {
   }
 }
 
+function update($log_name, &$old, $new, &$log) {
+  if ($old === $new) {
+    return false;
+  }
+  $log .= " : " . $log_name;
+  $old = $new;
+  return true;
+}
 foreach($techniques as $t) {
   $node = NULL;
   $node_exists = db_query("SELECT nid FROM {node} WHERE UPPER(title) = UPPER(:title) AND type = :type",
@@ -78,22 +94,28 @@ foreach($techniques as $t) {
     continue;
   }
   
-  //print_r($node);
   $mt = new MarkdownTechnique($t, $taxonomy);
-  $node->title = $mt->getTitle();
-  $node->field_technique_tags[$node->language] = $mt->getTags();
-  //$node->taxonomy = $t->getTags();
-  $node->type = $node_type;
-  $node->language = LANGUAGE_NONE;
-  $node->uid = $uid;
-  $node->body[$node->language][0]['value'] = $mt->getBody();
-  $node->body[$node->language][0]['summary'] = $mt->getSummary();
-  $node->body[$node->language][0]['format'] = 'markdown';
-  // Make this change a new revision
-  $node->revision = 1;
-  $node->log = 'This node was programmatically updated at ' . date('c');
-  if($node = node_submit($node)) {
-    node_save($node);
+  
+  $changed = False;
+  $log = '';
+  $changed |= update('Title', $node->title, $mt->getTitle(), $log);
+  $changed |= update('Tags', $node->field_technique_tags[$node->language], $mt->getTags(), $log);
+  $changed |= update('Type', $node->type, $node_type, $log);
+  $changed |= update('Language', $node->language, LANGUAGE_NONE, $log);
+  $changed |= update('uid', $node->uid, $uid, $log);
+  $changed |= update('Body', $node->body[$node->language][0]['value'], $mt->getBody(), $log);
+  $changed |= update('Summary', $node->body[$node->language][0]['summary'], $mt->getSummary(), $log);
+  $changed |= update('Format', $node->body[$node->language][0]['format'], 'markdown', $log);
+
+  // Only write node if it was changed.
+  if($changed) {
+    print $mt->getTitle() . "\n";
+    // At least one field was changed.
+    $node->revision = 1;
+    $node->log = "Revised" . $log;
+    if($node = node_submit($node)) {
+      node_save($node);
+    }
   }
 }
 
@@ -198,6 +220,13 @@ class Technique {
       return false;
     }
     $this->from[] = $name;
+    return true;
+  }
+  public function addTo($name) {
+    if(in_array($name, $this->to)) {
+      return false;
+    }
+    $this->to[] = $name;
     return true;
   }
   private function parseTo() { 
