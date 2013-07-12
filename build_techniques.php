@@ -51,7 +51,7 @@ if($result) {
 foreach($techniques as $t) {
   $node = NULL;
   $node_exists = db_query("SELECT nid FROM {node} WHERE UPPER(title) = UPPER(:title) AND type = :type",
-    array(':title' => $t->getTitle(), ':type' => $node_type)
+    array(':title' => $t->getName(), ':type' => $node_type)
   );
   if($node_exists) {
     $row = $node_exists->fetchAssoc();
@@ -63,8 +63,7 @@ foreach($techniques as $t) {
   if($node === NULL) {
     continue;
   }
-  $t->parseEscapes();
-  continue;
+  
   //print_r($node);
   $mt = new MarkdownTechnique($t, $taxonomy);
   $node->title = $mt->getTitle();
@@ -74,6 +73,7 @@ foreach($techniques as $t) {
   $node->language = LANGUAGE_NONE;
   $node->uid = $uid;
   $node->body[$node->language][0]['value'] = $mt->getBody();
+  $node->body[$node->language][0]['summary'] = $mt->getSummary();
   $node->body[$node->language][0]['format'] = 'markdown';
   // Make this change a new revision
   $node->revision = 1;
@@ -126,16 +126,10 @@ class Technique {
     $this->parseTo();
     $this->parseTags();
     $this->parseType();
-    
-    if($this->type === TechniqueType::SUBMISSION) {
-      $this->parseFrom();
-    }
+    $this->parseFrom();
   }
   public function getName() {
     return $this->name;
-  }
-  public function getTitle() {
-    return ucwords(strtolower($this->getName()));
   }
   public function getTo() {
     return $this->to;
@@ -166,38 +160,38 @@ class Technique {
   }
   public function parseNotes() {
     preg_match("/Notes:\s*(?P<select>[^\s].*[^\s])\s*Directions:/s", $this->raw, $m);
-    $lines = preg_split("/\r?\n/", $m['group'], NULL, PREG_SPLIT_NO_EMPTY);
+    $lines = preg_split("/\r?\n/", $m['select'], NULL, PREG_SPLIT_NO_EMPTY);
     foreach($lines as $l) {
       if(strpos($l, "- ") === 0) {
-        $this->notes[] = new ListItem(substr($l,2), False);
+        $this->notes[] = new ListItem(substr($l,2), 0);
       } else {
-        $this->notes[] = new ListItem($l, True);
+        $this->notes[] = new ListItem($l, 1);
       }
     }
   }
   public function parseDirections() {
     preg_match("/Directions:\s*(?P<select>[^\s].*[^\s])\s*Escapes:/s", $this->raw, $m);
-    $lines = preg_split("/\r?\n/", $m['group'], NULL, PREG_SPLIT_NO_EMPTY);
+    $lines = preg_split("/\r?\n/", $m['select'], NULL, PREG_SPLIT_NO_EMPTY);
     foreach($lines as $l) {
       if(strpos($l, "- ") === 0) {
-        $this->directions[] = new ListItem(substr($l,2), False);
+        $this->directions[] = new ListItem(substr($l,2), 0);
       } else {
-        $this->directions[] = new ListItem($l, True);
+        $this->directions[] = new ListItem($l, 1);
       }
     }
-    print_r($this->directions);
   }
   public function parseEscapes() {
     preg_match("/Escapes:\s*(?P<select>[^\s].*[^\s])\s*/s", $this->raw, $m);
-    $lines = preg_split("/\r?\n/", $m['group'], NULL, PREG_SPLIT_NO_EMPTY);
+    $lines = preg_split("/\r?\n/", $m['select'], NULL, PREG_SPLIT_NO_EMPTY);
     foreach($lines as $l) {
-      if(strpos($l, "- ") === 0) {
-        $this->escapes[] = new ListItem(substr($l,2), False);
+      if(strpos($l, "*") === 0) {
+        $this->escapes[] = new ListItem(substr($l,1), 0);
+      } else if(strpos($l, "-") === 0) {
+        $this->escapes[] = new ListItem(substr($l,2), 1);
       } else {
-        $this->escapes[] = new ListItem($l, True);
+        $this->escapes[] = new ListItem($l, 2);
       }
     }
-    print_r($this->escapes);
   }
   public function addFrom($name) {
     if(in_array($name, $this->from)) {
@@ -208,16 +202,18 @@ class Technique {
   }
   private function parseTo() { 
     preg_match_all("/to:\[(?P<select>[a-z\s\-]+)\]/i", $this->raw, $m);
-    $this->to = $m['group'];
+    $this->to = $m['select'];
   }
   private function parseFrom() {
     preg_match_all("/From:(?P<select>[^\n]*)/i", $this->raw, $m);
-    $this->from = preg_split("/\s*,\s*/", $m['group'][0]);
-    $this->from = array_map("trim", $this->from);
+    if($m['select']) {
+      $this->from = preg_split("/\s*,\s*/", $m['select'][0]);
+      $this->from = array_map("trim", $this->from);
+    }
   }
   private function parseTags() {
     preg_match_all("/^Type:(?P<select>[^\n]*)/i", $this->raw, $m);
-    $this->tags = preg_split("/\s*,\s*/", $m['group'][0]);
+    $this->tags = preg_split("/\s*,\s*/", $m['select'][0]);
     $this->tags = array_map("trim", $this->tags);
     $replace = function($str) {
       return str_replace(' ', '-', $str);
@@ -225,6 +221,9 @@ class Technique {
     $this->tags = array_map($replace, $this->tags);
   }
   private function parseType() {
+    if(!$this->tags) {
+      $this->parseTags();
+    }
     foreach($this->tags as $tag) {
       if($type = TechniqueType::reverseLookup($tag)) {
         $this->type = $type;
@@ -245,12 +244,12 @@ class MarkdownTechnique {
   // input: technique object
   public function __construct($technique, $taxonomy) {
     $technique->completeParse();
-    $this->title = constructTitle($technique);
-    $this->tags = constructTags($technique. $taxonomy);
-    $this->header = constructHeader($technique);
-    $this->notes = constructNotes($technique);
-    $this->directions = constructDirections($technique);
-    $this->escapes = constructEscapes($technique);
+    $this->title = $this->generateTitle($technique);
+    $this->tags = $this->generateTags($technique, $taxonomy);
+    $this->header = $this->generateHeader($technique);
+    $this->notes = $this->generateNotes($technique);
+    $this->directions = $this->generateDirections($technique);
+    $this->escapes = $this->generateEscapes($technique);
   }
   public function getTitle() {
     return $this->title;
@@ -258,20 +257,69 @@ class MarkdownTechnique {
   public function getTags() {
     return $this->tags;
   }
+  public function getSummary() {
+    return $this->header;
+  }
   public function getBody() {
-    return $this->header . $this->notes . $this->directions . $this->escapes;
+    return $this->header . "\n\n" . $this->notes . "\n\n" . $this->directions . "\n\n" . $this->escapes;
   }
-  private function constructTitle($technique) {
+  private function generateTitle($technique) {
+    return ucwords(strtolower($technique->getName()));
   }
-  private function constructTags($technique, $taxonomy) {
+  private function generateTags($technique, $taxonomy) {
     //TODO: Right now it ignores tags that don't already exist
     $new_tags = array();
-    foreach($technique->tags as $tag) {
+    foreach($technique->getTags() as $tag) {
       if(isset($taxonomy[$tag])) {
         $new_tags[] = ['tid' => $taxonomy[$tag]];
       }
     }
     return $new_tags;
+  }
+  private function generateHeader($technique) {
+    $h = ["Type: " . join(', ', array_map(function($i) {
+      return "[[path:".$i."|".$i."]]"; }, $technique->getTags()))];
+    $h[] = "";
+    $h[] = "Transition From: " . join(', ', array_map(function($i) {
+      return "[[".$i."|".$i."]]"; }, $technique->getFrom()));
+    $h[] = "";
+    $h[] = "Transition To: " . join(', ', array_map(function($i) {
+      return "[[".$i."|".$i."]]"; }, $technique->getTo()));
+    return join("\n", $h);
+  }
+  private function replaceLinks($str) {
+    $patterns = [
+      "/ref:\[([^\]]+)\]/",
+      "/to:\[([^\]]+)\]/",
+      "/. to:\[([^\]]+)\]/"
+    ];
+    $replacements = [
+      "[[$1|$1]]",
+      "transition to [[$1|$1]]",
+      "Transition to [[$1|$1]]"
+    ];
+    return preg_replace($patterns, $replacements, $str);
+  }
+  private function generateNotes($technique) {
+    $h = ["#### Notes:"];
+    $h[] = "";
+    foreach($technique->getNotes() as $item) {
+      $text = $this->replaceLinks($item->text);
+      $h[] = ($item->inset ? '' : '- ') . str_repeat('  ', $item->inset) . $text;
+    }
+    return join("\n\n", $h);
+  }
+  private function generateDirections($technique) {
+    $h = ["#### Directions:"];
+    $h[] = "";
+    foreach($technique->getDirections() as $item) {
+      $text = $this->replaceLinks($item->text);
+      $h[] = ($item->inset ? '' : '1. ') . str_repeat('  ', $item->inset) . $text;
+    }
+    return join("\n\n", $h);
+  }
+  private function generateEscapes($technique) {
+    return '';
   }
 }
 
@@ -291,11 +339,11 @@ class TechniqueType {
 class ListItem {
   // Text.
   public $text = '';
-  // Whether this is a sub-item.
-  public $isInset = False;
-  public function __construct($text, $isInset) {
+  // Degree of indentation.
+  public $inset = 0;
+  public function __construct($text, $inset) {
     $this->text = $text;
-    $this->isInset = $isInset;
+    $this->inset = $inset;
   }
 }
 ?>
