@@ -3,6 +3,20 @@ $dir = 'technique_dictionary/';
 $node_type = 'technique_post';
 $uid = 1;
 
+function getNameFromFile($filename) {
+  return str_replace('_', ' ', pathinfo($filename)['filename']);
+}
+
+function getTechniquesFromDir($dir) {
+  $return = array();
+  foreach (glob($dir . '*.txt') as $filename) {
+    $name = getNameFromFile($filename);
+    $raw = file_get_contents($filename);
+    $return[$name] = new Technique($name, $raw);
+  }
+  return $return;
+}
+
 $techniques = getTechniquesFromDir($dir);
 
 // Can have:
@@ -81,20 +95,6 @@ foreach($techniques as $t) {
   if($node = node_submit($node)) {
     node_save($node);
   }
-}
-
-function getNameFromFile($filename) {
-  return str_replace('_', ' ', pathinfo($filename)['filename']);
-}
-
-function getTechniquesFromDir($dir) {
-  $return = array();
-  foreach (glob($dir . '*.txt') as $filename) {
-    $name = getNameFromFile($filename);
-    $raw = file_get_contents($filename);
-    $return[$name] = new Technique($name, $raw);
-  }
-  return $return;
 }
 
 class Technique {
