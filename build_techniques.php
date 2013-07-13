@@ -41,6 +41,7 @@ function propogateReferences($techniques) {
       foreach($t_source->getTo() as $other) {
         // skip self references and unchanged references
         if($t_source->getName() === $other || !isset($techniques[$other])) {
+          print "Missing: " . $other . "\n";
           continue;
         }
         $changes |= $techniques[$other]->addFrom($t_source->getName());
@@ -48,6 +49,7 @@ function propogateReferences($techniques) {
       foreach($t_source->getFrom() as $other) {
         // skip self references and unchanged references
         if($t_source->getName() === $other || !isset($techniques[$other])) {
+          print "Missing: " . $other . "\n";
           continue;
         }
         $changes |= $techniques[$other]->addTo($t_source->getName());
@@ -111,7 +113,7 @@ foreach($techniques as $t) {
 
   // Only write node if it was changed.
   if($changed) {
-    print $mt->getTitle() . "\n";
+    print "Updated: " . $mt->getTitle() . "\n";
     // At least one field was changed.
     $node->revision = 1;
     $node->log = "Revised" . $log;
