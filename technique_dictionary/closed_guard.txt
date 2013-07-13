@@ -1,4 +1,5 @@
-Type: position
+Category: position
+Subcategory: guard
 
 Notes: 
 - In ref:[bottom half guard] the 'attacking side' is the side with the un-trapped leg.
@@ -9,10 +10,9 @@ Directions:
 - this position
 
 Escapes:
-to:[armbar]
+to:[top mount]
 
 Roll out
-- step
 - step
 - trick!
 

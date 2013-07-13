@@ -1,4 +1,5 @@
-Type: submission, choke
+Category: arm-lock
+Subcategory: shoulder-lock
 
 From: bottom closed guard  
 
